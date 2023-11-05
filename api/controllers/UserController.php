@@ -30,6 +30,11 @@ class UserController {
             'role' => $data->role
         ]);
 
+        // Send email to the user
+        if ($result['status'] === 'success') {
+            $this->userModel->sendPasswordResetEmail($data->email);
+        }
+
         echo json_encode($result);
     }
 

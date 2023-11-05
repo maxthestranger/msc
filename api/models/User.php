@@ -1,12 +1,16 @@
 <?php
 
 namespace Msc\Api\models;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
-class User {
+class User
+{
     private $conn;
     private $table_name = "users";
 
-    public function __construct($db) {
+    public function __construct($db)
+    {
         $this->conn = $db;
     }
 
@@ -76,7 +80,7 @@ class User {
         // Execute the query
         if ($stmt->execute()) {
             // Check if any row was affected
-            if($stmt->rowCount() > 0) {
+            if ($stmt->rowCount() > 0) {
                 return ['status' => 'success', 'message' => 'Password changed successfully.'];
             } else {
                 return ['status' => 'error', 'message' => 'Email does not exist.'];
@@ -86,4 +90,72 @@ class User {
         return ['status' => 'error', 'message' => 'Failed to change password.'];
     }
 
+    // sendPasswordResetEmail
+    public function sendPasswordResetEmail(array $data): array
+    {
+        $query = "SELECT * FROM " . $this->table_name . " WHERE email=:email";
+        $stmt = $this->conn->prepare($query);
+
+        // Bind values
+        $stmt->bindParam(":email", $data['email']);
+
+        // Execute the query
+        $stmt->execute();
+
+        // Get the row
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        // Check if the email exists
+        if ($row) {
+            // Generate a random token
+            $token = bin2hex(random_bytes(50));
+
+            // Update the user's token
+            $query = "UPDATE " . $this->table_name . " SET token=:token WHERE email=:email";
+            $stmt = $this->conn->prepare($query);
+
+            // Bind values
+            $stmt->bindParam(":token", $token);
+            $stmt->bindParam(":email", $data['email']);
+
+            // Execute the query
+            if ($stmt->execute()) {
+                // Send the email
+                $mail = new PHPMailer(true);
+
+                try {
+                    //Server settings
+                    $mail->SMTPDebug = 0;                                       // Enable verbose debug output
+                    $mail->isSMTP();                                            // Set mailer to use SMTP
+                    $mail->Host = 'smtp.mailtrap.io';                     // Specify main and backup SMTP servers
+                    $mail->SMTPAuth = true;                                   // Enable SMTP authentication
+                    $mail->Username = 'e0b0c0d0e0f0g0';                        // SMTP username
+                    $mail->Password = 'e0b0c0d0e0f0g0';                        // SMTP password
+                    $mail->SMTPSecure = 'tls';                                  // Enable TLS encryption, `ssl` also accepted
+                    $mail->Port = 2525;                                   // TCP port to connect to
+
+                    //Recipients
+                    $mail->setFrom('from@example.com', 'Mailer');
+                    $mail->addAddress($data['email'], $row['first_name']);      // Add a recipient
+
+                    // Content
+                    $mail->isHTML(true);                                        // Set email format to HTML
+                    $mail->Subject = 'Password Reset';
+                    $mail->Body = 'Click <a href="http://localhost:8080/reset-password?token=' . $token . '">here</a> to reset your password.';
+                    $mail->AltBody = 'Click here to reset your password: http://localhost:8080/reset-password?token=' . $token;
+
+                    $mail->send();
+
+                    return ['status' => 'success', 'message' => 'Password reset email sent successfully.'];
+                } catch (Exception $e) {
+                    return ['status' => 'error', 'message' => 'Failed to send password reset email.'];
+                }
+            }
+
+            return ['status' => 'error', 'message' => 'Failed to send password reset email.'];
+
+        } else {
+            return ['status' => 'error', 'message' => 'Email does not exist.'];
+        }
+    }
 }
