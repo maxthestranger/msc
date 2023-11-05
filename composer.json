@@ -5,5 +5,8 @@
             "Msc\\Api\\": "api/"
         }
     },
-    "require": {}
+    "require": {
+        "ext-json": "*",
+        "ext-pdo": "*"
+    }
 }

@@ -1,96 +1,73 @@
 <?php
 
-namespace controllers;
+namespace Msc\Api\controllers;
 
-use Database;
-use models\User;
+use Msc\Api\models\User;
 
 class UserController {
-    private $db;
     private $userModel;
 
-    public function __construct() {
-        $this->db = (new Database())->getConnection();
-        $this->userModel = new User($this->db);
+    public function __construct(User $userModel) {
+        $this->userModel = $userModel;
     }
 
+    // allows admin to create a new user
+    public function createUser() {
+        $data = json_decode(file_get_contents("php://input"));
 
-    // Create user
-    public function createUser($first_name, $last_name, $email, $password, $role) {
-        $this->userModel->first_name = $first_name;
-        $this->userModel->last_name = $last_name;
-        $this->userModel->email = $email;
-        $this->userModel->password = password_hash($password, PASSWORD_DEFAULT);
-        $this->userModel->role = $role;
-
-        if ($this->userModel->create()) {
-            return ['status' => 'success', 'message' => 'User created successfully.'];
-        } else {
-            return ['status' => 'error', 'message' => 'Failed to create user.'];
+        // Validate input data
+        if (!isset($data->first_name, $data->last_name, $data->email, $data->password, $data->role)) {
+            echo json_encode(['status' => 'error', 'message' => 'Invalid input. All fields are required.']);
+            http_response_code(400);  // Bad Request
+            return;
         }
+
+        $result = $this->userModel->create([
+            'first_name' => $data->first_name,
+            'last_name' => $data->last_name,
+            'email' => $data->email,
+            'password' => $data->password,
+            'role' => $data->role
+        ]);
+
+        echo json_encode($result);
     }
 
-    // Update user
-    public function updateUser($id, $first_name, $last_name, $email, $password, $role) {
-        $this->userModel->id = $id;
-        $this->userModel->first_name = $first_name;
-        $this->userModel->last_name = $last_name;
-        $this->userModel->email = $email;
-        $this->userModel->password = password_hash($password, PASSWORD_DEFAULT);
-        $this->userModel->role = $role;
+    // user login
+    public function login() {
+        $data = json_decode(file_get_contents("php://input"));
 
-        if ($this->userModel->update()) {
-            return ['status' => 'success', 'message' => 'User updated successfully.'];
-        } else {
-            return ['status' => 'error', 'message' => 'Failed to update user.'];
+        // Validate input data
+        if (!isset($data->email, $data->password)) {
+            echo json_encode(['status' => 'error', 'message' => 'Invalid input. All fields are required.']);
+            http_response_code(400);  // Bad Request
+            return;
         }
+
+        $result = $this->userModel->login([
+            'email' => $data->email,
+            'password' => $data->password
+        ]);
+
+        echo json_encode($result);
     }
 
-    // Delete user
-    public function deleteUser($id) {
-        $this->userModel->id = $id;
+    // change password
+    public function changePassword() {
+        $data = json_decode(file_get_contents("php://input"));
 
-        if ($this->userModel->delete()) {
-            return ['status' => 'success', 'message' => 'User deleted successfully.'];
-        } else {
-            return ['status' => 'error', 'message' => 'Failed to delete user.'];
+        // Validate input data
+        if (!isset($data->email, $data->password)) {
+            echo json_encode(['status' => 'error', 'message' => 'Invalid input. All fields are required.']);
+            http_response_code(400);  // Bad Request
+            return;
         }
-    }
 
-    // Get user by id
-    public function getById($id) {
-        $this->userModel->id = $id;
+        $result = $this->userModel->changePassword([
+            'email' => $data->email,
+            'password' => $data->password
+        ]);
 
-        $user = $this->userModel->getById();
-
-        if ($user) {
-            return ['status' => 'success', 'data' => $user];
-        } else {
-            return ['status' => 'error', 'message' => 'User not found.'];
-        }
-    }
-
-    // Get all users
-    public function getAll() {
-        $users = $this->userModel->getAll();
-
-        if ($users) {
-            return ['status' => 'success', 'data' => $users];
-        } else {
-            return ['status' => 'error', 'message' => 'No users found.'];
-        }
-    }
-
-    // Login user
-    public function login($email, $password) {
-        $this->userModel->email = $email;
-        $user = $this->userModel->getByEmail();
-
-        if ($user && password_verify($password, $user['password'])) {
-            return ['status' => 'success', 'data' => $user];
-        } else {
-            return ['status' => 'error', 'message' => 'Invalid email or password.'];
-        }
+        echo json_encode($result);
     }
 }
-
