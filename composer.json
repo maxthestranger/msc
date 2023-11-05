@@ -1,0 +1,9 @@
+{
+    "name": "msc/api",
+    "autoload": {
+        "psr-4": {
+            "Msc\\Api\\": "api/"
+        }
+    },
+    "require": {}
+}
