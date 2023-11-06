@@ -1,0 +1,19 @@
+export default function validateLogin(values) {
+    let errors = {};
+
+    // Email Errors
+    if (!values.email) {
+        errors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(values.email)) {
+        errors.email = "Email address is invalid";
+    }
+
+    // Password Errors
+    if (!values.password) {
+        errors.password = "Password is required";
+    } else if (values.password.length < 6) { // or whatever your password criteria is
+        errors.password = "Password must be at least 6 characters";
+    }
+
+    return errors;
+}

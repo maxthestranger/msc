@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    body {
+        @apply font-satoshi font-normal text-base text-body bg-whiten relative z-1;
+    }
+}
+
+/* Styles for the scrollbar container */
+::-webkit-scrollbar {
+    @apply w-2.5;
+}
+
+/* Styles for the draggable handle */
+::-webkit-scrollbar-thumb {
+    @apply bg-primary rounded transition-colors;
+}
+
+/* Styles for the draggable handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary;
+}
+
+/* Styles for the track/background */
+::-webkit-scrollbar-track {
+    @apply bg-gray rounded;
+}
+
+/* For Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.purple.400') theme('colors.gray');
+}
