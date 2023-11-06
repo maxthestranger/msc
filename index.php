@@ -2,8 +2,10 @@
 
 require_once __DIR__ . '/vendor/autoload.php';
 
+use Msc\Api\controllers\CourseController;
 use Msc\Api\controllers\UserController;
 use Msc\Api\middleware\AuthMiddleware;
+use Msc\Api\models\Course;
 use Msc\Api\models\User;
 use Msc\Api\config\Database;
 use Msc\Api\routes\Router;
@@ -19,6 +21,7 @@ try {
     die();
 }
 $userModel = new User($db);
+$courseModel = new Course($db);
 
 // root
 $router->route('', 'GET', function() {
@@ -33,8 +36,11 @@ $router->route('api/user/change-password', 'POST', [new UserController($userMode
 // users
 $router->route('api/user/update', 'PUT', [new UserController($userModel), 'updateUser']);
 $router->route('api/user/delete', 'DELETE', [new UserController($userModel), 'deleteUser']);
-$router->route('api/user/getById', 'GET', [new UserController($userModel), 'getById']);
-$router->route('api/user/getAll', 'GET', [new UserController($userModel), 'getAll']);
-$router->route('api/user/login', 'POST', [new UserController($userModel), 'login']);
+
+// Courses
+$router->route('api/course/create', 'POST', [new CourseController($courseModel), 'createCourse']);
+$router->route('api/course/update', 'PUT', [new CourseController($courseModel), 'updateCourse']);
+$router->route('api/course/delete', 'DELETE', [new CourseController($courseModel), 'deleteCourse']);
+$router->route('api/course/get', 'GET', [new CourseController($courseModel), 'getCourse']);
 
 $router->resolve();

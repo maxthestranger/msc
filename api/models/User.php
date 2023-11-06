@@ -157,5 +157,50 @@ class User
         } else {
             return ['status' => 'error', 'message' => 'Email does not exist.'];
         }
+
+    }
+
+    // update user record
+    public function update(array $data): array
+    {
+        // SQL query to update user
+        $query = "UPDATE " . $this->table_name . " SET first_name=:first_name, last_name=:last_name, email=:email, role=:role WHERE id=:id";
+
+        // Prepare the query
+        $stmt = $this->conn->prepare($query);
+
+        // Bind values
+        $stmt->bindParam(":first_name", $data['first_name']);
+        $stmt->bindParam(":last_name", $data['last_name']);
+        $stmt->bindParam(":email", $data['email']);
+        $stmt->bindParam(":role", $data['role']);
+        $stmt->bindParam(":id", $data['id']);
+
+        // Execute the query
+        if ($stmt->execute()) {
+            return ['status' => 'success', 'message' => 'User updated successfully.'];
+        }
+
+        return ['status' => 'error', 'message' => 'Failed to update user.'];
+    }
+
+    // delete user record
+    public function delete(string $id): bool
+    {
+        // SQL query to delete user
+        $query = "DELETE FROM " . $this->table_name . " WHERE id = ?";
+
+        // Prepare the query
+        $stmt = $this->conn->prepare($query);
+
+        // Bind the value
+        $stmt->bindParam(1, $id);
+
+        // Execute the query
+        if ($stmt->execute()) {
+            return true;
+        }
+
+        return false;
     }
 }

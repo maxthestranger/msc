@@ -1,115 +1,167 @@
 <?php
 
-namespace models;
+namespace Msc\Api\models;
 
 class Course {
     private $conn;
     private $table_name = "courses";
 
-    public $id;
-    public $course_name;
-    public $course_description;
-    public $created_by_admin;
-
     public function __construct($db) {
         $this->conn = $db;
     }
 
-    // read courses
-    function read() {
-        $query = "SELECT * FROM " . $this->table_name . " ORDER BY id DESC";
+    // Create a new course record
+    public function create(array $data): array {
+        try {
+            $this->validateCourseData($data);
+
+            $query = "INSERT INTO " . $this->table_name . " SET course_name=:course_name, course_description=:course_description, created_by_admin=:created_by_admin";
+            $stmt = $this->conn->prepare($query);
+
+            $stmt->bindParam(":course_name", $data['course_name']);
+            $stmt->bindParam(":course_description", $data['course_description']);
+            $stmt->bindParam(":created_by_admin", $data['created_by_admin']);
+
+            if ($stmt->execute()) {
+                return ['status' => 'success', 'message' => 'Course created successfully.'];
+            }
+
+            return ['status' => 'error', 'message' => 'Failed to create course.'];
+        } catch (\Exception $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    // Update a course record
+    public function update(array $data): array {
+        try {
+            $this->validateCourseData($data);
+
+            $query = "UPDATE " . $this->table_name . " SET course_name=:course_name, course_description=:course_description WHERE id=:id";
+            $stmt = $this->conn->prepare($query);
+
+            $stmt->bindParam(":course_name", $data['course_name']);
+            $stmt->bindParam(":course_description", $data['course_description']);
+            $stmt->bindParam(":id", $data['id']);
+
+            if ($stmt->execute()) {
+                return ['status' => 'success', 'message' => 'Course updated successfully.'];
+            }
+
+            return ['status' => 'error', 'message' => 'Failed to update course.'];
+        } catch (\Exception $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    // Delete a course record
+    public function delete(string $id): array {
+        try {
+            // Validate the ID (ensure it's a positive integer)
+            if (!ctype_digit($id) || $id <= 0) {
+                throw new \InvalidArgumentException("Invalid course ID.");
+            }
+
+            $query = "DELETE FROM " . $this->table_name . " WHERE id = ?";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(1, $id);
+
+            if ($stmt->execute()) {
+                return ['status' => 'success', 'message' => 'Course deleted successfully.'];
+            }
+
+            return ['status' => 'error', 'message' => 'Failed to delete course.'];
+        } catch (\Exception $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    // Validate course data before insertion or update
+    private function validateCourseData(array $data) {
+        if (empty($data['course_name']) || empty($data['course_description'])) {
+            throw new \InvalidArgumentException("Course name and description are required fields.");
+        }
+
+        if (strlen($data['course_name']) > 255) {
+            throw new \InvalidArgumentException("Course name cannot be longer than 255 characters.");
+        }
+
+        if (strlen($data['course_description']) > 1000) {
+            throw new \InvalidArgumentException("Course description cannot be longer than 1000 characters.");
+        }
+
+        if (!ctype_digit($data['created_by_admin']) || $data['created_by_admin'] <= 0) {
+            throw new \InvalidArgumentException("Invalid admin ID.");
+        }
+
+        if (!ctype_digit($data['id']) || $data['id'] <= 0) {
+            throw new \InvalidArgumentException("Invalid course ID.");
+        }
+    }
+
+    // Get all courses
+    public function getAll(): array {
+        $query = "SELECT * FROM " . $this->table_name;
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
-        return $stmt;
-    }
 
-    // create new course record
-    public function create() {
-        // SQL query to insert new course
-        $query = "INSERT INTO " . $this->table_name . " SET course_name=:course_name, course_description=:course_description, created_by_admin=:created_by_admin";
-
-        // Prepare the query
-        $stmt = $this->conn->prepare($query);
-
-        // Bind values
-        $stmt->bindParam(":course_name", $this->course_name);
-        $stmt->bindParam(":course_description", $this->course_description);
-        $stmt->bindParam(":created_by_admin", $this->created_by_admin);
-
-        // Execute the query
-        if ($stmt->execute()) {
-            return true;
+        $courses = [];
+        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+            $courses[] = $row;
         }
 
-        return false;
+        return $courses;
     }
 
-    // update course record
-    public function update() {
-        // SQL query to update course
-        $query = "UPDATE " . $this->table_name . " SET course_name=:course_name, course_description=:course_description WHERE id=:id";
+    public function getCourse(string $id): array {
+        try {
+            // Validate the ID (ensure it's a positive integer)
+            if (!ctype_digit($id) || $id <= 0) {
+                throw new \InvalidArgumentException("Invalid course ID.");
+            }
 
-        // Prepare the query
-        $stmt = $this->conn->prepare($query);
+            $query = "
+                SELECT c.*, cm.* 
+                FROM " . $this->table_name . " c
+                LEFT JOIN course_materials cm ON c.id = cm.course_id
+                WHERE c.id = ?
+            ";
 
-        // Bind values
-        $stmt->bindParam(":course_name", $this->course_name);
-        $stmt->bindParam(":course_description", $this->course_description);
-        $stmt->bindParam(":id", $this->id);
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(1, $id);
+            $stmt->execute();
 
-        // Execute the query
-        if ($stmt->execute()) {
-            return true;
-        }
+            $course = null;
+            $materials = [];
 
-        return false;
-    }
+            while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+                if ($course === null) {
+                    // Set the course information only once
+                    $course = [
+                        'id' => $row['id'],
+                        'course_name' => $row['course_name'],
+                        'course_description' => $row['course_description'],
+                        // Add other course fields as needed
+                    ];
+                }
 
-    // delete course record
-    public function delete() {
-        // SQL query to delete course
-        $query = "DELETE FROM " . $this->table_name . " WHERE id = ?";
+                // Add course materials to the materials array
+                $materials[] = [
+                    'material_id' => $row['material_id'],
+                    'material_name' => $row['material_name'],
+                    // Add other material fields as needed
+                ];
+            }
 
-        // Prepare the query
-        $stmt = $this->conn->prepare($query);
+            if ($course !== null) {
+                $course['course_materials'] = $materials;
+                return ['status' => 'success', 'data' => $course];
+            }
 
-        // Bind the value
-        $stmt->bindParam(1, $this->id);
-
-        // Execute the query
-        if ($stmt->execute()) {
-            return true;
-        }
-
-        return false;
-    }
-
-    // get single course record include course_materials
-    public function readOne() {
-        // SQL query to read single course
-        $query = "SELECT * FROM " . $this->table_name . " WHERE id = ? LIMIT 0,1";
-
-        // Prepare the query
-        $stmt = $this->conn->prepare($query);
-
-        // Bind the value
-        $stmt->bindParam(1, $this->id);
-
-        // Execute the query
-        $stmt->execute();
-
-        // Get number of rows
-        $num = $stmt->rowCount();
-
-        // If course exists
-        if ($num > 0) {
-            // Get course details
-            $row = $stmt->fetch(\PDO::FETCH_ASSOC);
-
-            // Assign values to object properties
-            $this->course_name = $row['course_name'];
-            $this->course_description = $row['course_description'];
-            $this->created_by_admin = $row['created_by_admin'];
+            return ['status' => 'error', 'message' => 'Course not found.'];
+        } catch (\Exception $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
         }
     }
 }
+

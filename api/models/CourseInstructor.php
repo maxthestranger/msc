@@ -1,6 +1,6 @@
 <?php
 
-namespace models;
+namespace Msc\Api\models;
 
 class CourseInstructor {
     private $conn;

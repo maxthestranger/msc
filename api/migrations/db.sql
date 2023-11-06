@@ -31,6 +31,8 @@ CREATE TABLE courses (
     id INT PRIMARY KEY AUTO_INCREMENT,
     course_name VARCHAR(255) NOT NULL,
     course_description TEXT,
+    course_code VARCHAR(50) NOT NULL,
+    course_hours INT NOT NULL,
     created_by_admin INT,
     FOREIGN KEY (created_by_admin) REFERENCES users(id)
 );
