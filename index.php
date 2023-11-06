@@ -2,12 +2,14 @@
 
 require_once __DIR__ . '/vendor/autoload.php';
 
+use Msc\Api\config\Database;
 use Msc\Api\controllers\CourseController;
+use Msc\Api\controllers\EnrollmentController;
 use Msc\Api\controllers\UserController;
 use Msc\Api\middleware\AuthMiddleware;
 use Msc\Api\models\Course;
+use Msc\Api\models\Enrollment;
 use Msc\Api\models\User;
-use Msc\Api\config\Database;
 use Msc\Api\routes\Router;
 
 header("Access-Control-Allow-Origin: *");
@@ -22,6 +24,7 @@ try {
 }
 $userModel = new User($db);
 $courseModel = new Course($db);
+$enrollmentModel = new Enrollment($db);
 
 // root
 $router->route('', 'GET', function() {
@@ -42,5 +45,11 @@ $router->route('api/course/create', 'POST', [new CourseController($courseModel),
 $router->route('api/course/update', 'PUT', [new CourseController($courseModel), 'updateCourse']);
 $router->route('api/course/delete', 'DELETE', [new CourseController($courseModel), 'deleteCourse']);
 $router->route('api/course/get', 'GET', [new CourseController($courseModel), 'getCourse']);
+
+// Enrollments
+$router->route('api/enrollment/create', 'POST', [new EnrollmentController($enrollmentModel), 'createEnrollment']);
+$router->route('api/enrollment/delete', 'DELETE', [new EnrollmentController($enrollmentModel), 'deleteEnrollment']);
+$router->route('api/enrollment/get-by-student-id', 'GET', [new EnrollmentController($enrollmentModel), 'getEnrollmentsByStudentId']);
+
 
 $router->resolve();
