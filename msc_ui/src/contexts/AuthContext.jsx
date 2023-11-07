@@ -23,7 +23,6 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         try {
-            // POST request to the REST API for user login.
             const response = await fetch('http://localhost:8000/api/login', {
                 method: 'POST',
                 headers: {
@@ -33,18 +32,32 @@ export const AuthProvider = ({ children }) => {
             });
 
             if (!response.ok) {
-                throw new Error('Login failed');
+                // If the HTTP status code is not ok, throw an error.
+                throw new Error('Network response was not ok.');
             }
 
             const data = await response.json();
 
-            // Set the currentUser state and store in local storage.
-            setCurrentUser(data.user);
-            localStorage.setItem('currentUser', JSON.stringify(data.user));
+            // Check if the PHP backend returned an error status.
+            if (data.status === 'error') {
+                throw new Error(data.message);
+            }
 
-            return data.user;
+            // If we have a successful login
+            if (data.status === 'success') {
+                // Set the currentUser state and store in local storage.
+                setCurrentUser(data.user);
+                localStorage.setItem('currentUser', JSON.stringify(data.user));
+
+                // Store the token in local storage or a cookie
+                localStorage.setItem('token', data.token);
+                // You may also want to configure this token in your subsequent API calls' headers
+
+                // Return the user and the token for further processing if needed
+                return { user: data.user, token: data.token };
+            }
+
         } catch (error) {
-            console.error('There was an error logging in!', error.message);
             throw error;
         }
     };

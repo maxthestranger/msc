@@ -11,6 +11,8 @@ import { AuthProvider } from "./contexts/AuthContext"
 // pages
 import Index from './pages/index'
 import Login from './pages/auth/login'
+import AdminDashboard from "./pages/dashboards/admin";
+import Courses from "./pages/courses/index";
 
 // css
 import './assets/css/app.css'
@@ -23,6 +25,14 @@ const router = createBrowserRouter([
     {
         path: "/login",
         element: <Login />
+    },
+    {
+        path: "/admin/dashboard",
+        element: <AdminDashboard />
+    },
+    {
+        path: "/courses",
+        element: <Courses />
     }
 ]);
 

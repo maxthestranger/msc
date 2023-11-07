@@ -39,13 +39,18 @@ class User
     }
 
     // user login
+
+    /**
+     * @throws \Exception
+     */
     public function login(array $data): array
     {
         $query = "SELECT * FROM " . $this->table_name . " WHERE email=:email";
         $stmt = $this->conn->prepare($query);
 
-        // Bind values
-        $stmt->bindParam(":email", $data['email']);
+        // Sanitize and bind values
+        $email = htmlspecialchars(strip_tags($data['email']));
+        $stmt->bindParam(":email", $email);
 
         // Execute the query
         $stmt->execute();
@@ -57,12 +62,36 @@ class User
         if ($row) {
             // Check if the password is correct
             if (password_verify($data['password'], $row['password'])) {
-                return ['status' => 'success', 'message' => 'User logged in successfully.'];
+                // Remove the password from the row before returning it
+                unset($row['password']);
+
+                // Generate a token (implementation depends on your application)
+                $token = $this->generateToken($row['id']);
+
+                // Return success status, user data and token
+                return [
+                    'status' => 'success',
+                    'message' => 'User logged in successfully.',
+                    'user' => $row,
+                    'token' => $token
+                ];
             }
         }
 
         return ['status' => 'error', 'message' => 'Invalid email or password.'];
     }
+
+    // Stub method for token generation
+
+    /**
+     * @throws \Exception
+     */
+    private function generateToken($userId) {
+        // Here you would generate a JWT or another form of token
+        // This is just a placeholder implementation
+        return base64_encode(random_bytes(64));
+    }
+
 
     // change password
     public function changePassword(array $data): array

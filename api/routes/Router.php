@@ -20,6 +20,18 @@ class Router
 
     public function resolve()
     {
+	// Add CORS headers
+        header('Access-Control-Allow-Origin: http://localhost:5173'); // or '*' for any domain
+        header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+        header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+
+        // Respond to preflight requests for CORS
+        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+            // Send headers and exit
+            http_response_code(200);
+            exit();
+        }
+
         $uri = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
         $requestMethod = $_SERVER['REQUEST_METHOD'];
 
@@ -41,6 +53,7 @@ class Router
                 call_user_func([$controller, $method]);
             }
         } else {
+	    header('Content-Type: application/json');
             echo json_encode(['error' => 'Route not found']);
             http_response_code(404);
         }

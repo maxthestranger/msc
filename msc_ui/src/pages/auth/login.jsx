@@ -34,9 +34,9 @@ export default function Login() {
         setApiError('')
 
         try {
-            const user = await login(values.email, values.password);
+            const { user } = await login(values.email, values.password);
 
-            navigate(`/dashboard/${user.role}`)
+            navigate(`/${user.role}/dashboard`, {replace: true})
 
         } catch (error) {
             const errorMsg = error.message || 'Error during login.';
