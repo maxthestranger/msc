@@ -23,6 +23,9 @@ CREATE TABLE users (
     last_name VARCHAR(50) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
+    email_verified BOOLEAN DEFAULT FALSE,
+    token VARCHAR(255),
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     role ENUM('student', 'instructor', 'admin', 'coordinator', 'qa') NOT NULL
 );
 
@@ -30,11 +33,16 @@ CREATE TABLE users (
 CREATE TABLE courses (
     id INT PRIMARY KEY AUTO_INCREMENT,
     course_name VARCHAR(255) NOT NULL,
-    course_description TEXT,
     course_code VARCHAR(50) NOT NULL,
-    course_hours INT NOT NULL,
+    course_description TEXT,
+    instructor_id INT NOT NULL,
+    pre_requisites TEXT,
+    syllabus TEXT,
+    credits INT NOT NULL,
     created_by_admin INT,
-    FOREIGN KEY (created_by_admin) REFERENCES users(id)
+    FOREIGN KEY (created_by_admin) REFERENCES users(id),
+    FOREIGN KEY (instructor_id) REFERENCES users(id),
+    UNIQUE(course_name, course_code)
 );
 
 -- Create `course_materials` table
@@ -75,16 +83,6 @@ CREATE TABLE enrollments (
     FOREIGN KEY (student_id) REFERENCES users(id),
     FOREIGN KEY (course_id) REFERENCES courses(id),
     UNIQUE(student_id, course_id) -- To ensure a student can enroll in a course only once
-);
-
--- Create `course_instructors` table
-CREATE TABLE course_instructors (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    instructor_id INT NOT NULL,
-    course_id INT NOT NULL,
-    FOREIGN KEY (instructor_id) REFERENCES users(id),
-    FOREIGN KEY (course_id) REFERENCES courses(id),
-    UNIQUE(instructor_id, course_id) -- To ensure an instructor can be assigned to a course only once
 );
 
 -- Create `program_coordinator_requests` table
@@ -131,6 +129,6 @@ CREATE TABLE messages (
 );
 
 -- Insert default admin user
-INSERT INTO users (first_name, last_name, email, password, role) VALUES ('System', 'Admin', 'admin@msc.com', 'admin', 'admin');
+# INSERT INTO users (first_name, last_name, email, email_verified, token, password, role) VALUES ('System', 'Admin', 'admin@msc.com', TRUE, '', '$2b$1', 'admin');
 
 

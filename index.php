@@ -33,12 +33,13 @@ $router->route('', 'GET', function() {
 
 // authentication
 $router->route('api/login', 'POST', [new UserController($userModel), 'login']);
-$router->route('api/user/create', 'POST', [new UserController($userModel), 'createUser', AuthMiddleware::class]);
-$router->route('api/user/change-password', 'POST', [new UserController($userModel), 'changePassword', AuthMiddleware::class]);
+$router->route('api/users/create', 'POST', [new UserController($userModel), 'createUser', AuthMiddleware::class]);
+$router->route('api/users/reset-password', 'POST', [new UserController($userModel), 'changePassword', AuthMiddleware::class]);
 
 // users
-$router->route('api/user/update', 'PUT', [new UserController($userModel), 'updateUser']);
-$router->route('api/user/delete', 'DELETE', [new UserController($userModel), 'deleteUser']);
+$router->route('api/users', 'GET', [new UserController($userModel), 'getUsers']);
+$router->route('api/users/update', 'PUT', [new UserController($userModel), 'updateUser']);
+$router->route('api/users/delete', 'DELETE', [new UserController($userModel), 'deleteUser']);
 
 // Courses
 $router->route('api/course/create', 'POST', [new CourseController($courseModel), 'createCourse']);

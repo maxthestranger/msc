@@ -1,11 +1,13 @@
 import { useState } from "react";
 import {Link, useNavigate} from "react-router-dom";
-import DashboardLayout from "../../layouts/DashboardLayout.jsx";
-import InputLabel from "../../components/InputLabel.jsx";
-import TextInput from "../../components/TextInput.jsx";
-import InputError from "../../components/InputError.jsx";
-import useCourses from "../../hooks/useCourses.jsx";
-import {useAuth} from "../../contexts/AuthContext.jsx";
+import DashboardLayout from "../../layouts/DashboardLayout";
+import InputLabel from "../../components/InputLabel";
+import TextInput from "../../components/TextInput";
+import InputError from "../../components/InputError";
+import useCourses from "../../hooks/useCourses";
+import {useAuth} from "../../contexts/AuthContext";
+import MDEditor from "@uiw/react-md-editor";
+import MdEditor from "../../components/mdEditor.jsx";
 
 export default function Create() {
     const {
@@ -19,15 +21,13 @@ export default function Create() {
     const [data, setData] = useState({
         course_name: '',
         course_description: '',
-        objectives: '',
-        resources: '',
+        course_code: '',
     });
 
     const [errors, setErrors] = useState({
         course_name: '',
         description: '',
-        objectives: '',
-        resources: '',
+        course_code: '',
     });
 
     const handleValidation = () => {
@@ -44,14 +44,9 @@ export default function Create() {
             errors['description'] = 'Description is required';
         }
 
-        if (!data.objectives) {
+        if (!data.course_code) {
             formIsValid = false;
-            errors['objectives'] = 'Objectives are required';
-        }
-
-        if (!data.resources) {
-            formIsValid = false;
-            errors['resources'] = 'Resources are required';
+            errors['course_code'] = 'Course Code is required';
         }
 
         setErrors(errors);
@@ -71,7 +66,7 @@ export default function Create() {
 
         if (handleValidation()) {
             await createCourse({...data, created_by: currentUser.id}).then(() => {
-                navigate('/admin/courses.jsx');
+                navigate('/courses');
             });
         }
     }
@@ -82,7 +77,7 @@ export default function Create() {
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="flex flex-row items-center justify-between mb-4">
                         <div className="flex flex-row items-center gap-3">
-                            <Link to="/admin/courses" className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-black bg-gray border border-opacity-25 border-black rounded-md hover:bg-gray-3 focus:outline-none">
+                            <Link to="/courses" className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-black bg-gray border border-opacity-25 border-black rounded-md hover:bg-gray-3 focus:outline-none">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-chevron-bar-left" viewBox="0 0 16 16">
                                     <path fillRule="evenodd" d="M11.854 3.646a.5.5 0 0 1 0 .708L8.207 8l3.647 3.646a.5.5 0 0 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 0 1 .708 0zM4.5 1a.5.5 0 0 0-.5.5v13a.5.5 0 0 0 1 0v-13a.5.5 0 0 0-.5-.5z"/>
                                 </svg>
@@ -96,28 +91,22 @@ export default function Create() {
                             <form onSubmit={submit}>
                                 <div className="p-6.5">
                                     <div className="mb-4.5">
-                                        <InputLabel htmlFor="course_name" value="Course name" />
-                                        <TextInput id="course_name" placeholder="Type your course name" type="text" name="course_name" value={data.course_name} onChange={(e) => handleChange(e)} />
+                                        <InputLabel htmlFor="course_code" value="Course Code" />
+                                        <TextInput id="course_code" placeholder="Enter course code" type="url" name="course_code" value={data.course_code} onChange={(e) => handleChange(e)} />
+
+                                        <InputError message={errors.course_code} className="mt-2" />
+                                    </div>
+                                    <div className="mb-4.5">
+                                        <InputLabel htmlFor="course_name" value="Course Name" />
+                                        <TextInput id="course_name" placeholder="Enter course name" type="text" name="course_name" value={data.course_name} onChange={(e) => handleChange(e)} />
 
                                         <InputError message={errors.course_name} className="mt-2" />
                                     </div>
                                     <div className="mb-4.5">
                                         <InputLabel htmlFor="description" value="Description" />
-                                        <textarea id="description" placeholder="Description this course" name="description" value={data.description} onChange={(e) => handleChange(e)} className="w-full h-40 border border-gray rounded p-3 focus:outline-none focus:border-primary transition-colors duration-200" />
+                                        <MdEditor value={data.description} onChange={(e) => setData({...data, description: e})} />
 
                                         <InputError message={errors.description} className="mt-2" />
-                                    </div>
-                                    <div className="mb-4.5">
-                                        <InputLabel htmlFor="objectives" value="Objectives" />
-                                        <textarea id="objectives" placeholder="Enter the course objectives" name="objectives" value={data.objectives} onChange={(e) => handleChange(e)} className="w-full h-40 border border-gray rounded p-3 focus:outline-none focus:border-primary transition-colors duration-200" />
-
-                                        <InputError message={errors.objectives} className="mt-2" />
-                                    </div>
-                                    <div className="mb-4.5">
-                                        <InputLabel htmlFor="resources" value="Resources" />
-                                        <TextInput id="resources" placeholder="Paste a link to resources" type="url" name="resources" value={data.resources} onChange={(e) => handleChange(e)} />
-
-                                        <InputError message={errors.resources} className="mt-2" />
                                     </div>
                                     <button className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none" type="submit">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-terminal-plus" viewBox="0 0 16 16">

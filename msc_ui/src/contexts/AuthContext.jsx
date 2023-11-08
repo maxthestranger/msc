@@ -62,15 +62,16 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const changePassword = async (email, newPassword) => {
+    const resetPassword = async (email, password) => {
+        console.log('resetPassword', email, password)
         try {
             // POST request to the REST API to change the password.
-            const response = await fetch('http://localhost:8000/api/change-password', {
+            const response = await fetch('http://localhost:8000/api/users/reset-password', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ email, newPassword }),
+                body: JSON.stringify({ email, password }),
             });
 
             if (!response.ok) {
@@ -100,7 +101,7 @@ export const AuthProvider = ({ children }) => {
     const value = {
         currentUser,
         login,
-        changePassword,
+        resetPassword,
         logout,
     };
 

@@ -17,25 +17,33 @@ class User
     // create a new user
     public function create(array $data): array
     {
-        $query = "INSERT INTO " . $this->table_name . " SET first_name=:first_name, last_name=:last_name, email=:email, password=:password, role=:role";
-        $stmt = $this->conn->prepare($query);
+        try {
+            $query = "INSERT INTO " . $this->table_name . " SET first_name=:first_name, last_name=:last_name, email=:email, password=:password, role=:role";
+            $stmt = $this->conn->prepare($query);
 
-        // Hash the password
-        $hash = password_hash($data['password'], PASSWORD_BCRYPT);
+            // Hash the password
+            $hash = password_hash($data['password'], PASSWORD_BCRYPT);
 
-        // Bind values
-        $stmt->bindParam(":first_name", $data['first_name']);
-        $stmt->bindParam(":last_name", $data['last_name']);
-        $stmt->bindParam(":email", $data['email']);
-        $stmt->bindParam(":password", $hash);
-        $stmt->bindParam(":role", $data['role']);
+            // Bind values
+            $stmt->bindParam(":first_name", $data['first_name']);
+            $stmt->bindParam(":last_name", $data['last_name']);
+            $stmt->bindParam(":email", $data['email']);
+            $stmt->bindParam(":password", $hash);
+            $stmt->bindParam(":role", $data['role']);
 
-        // Execute the query
-        if ($stmt->execute()) {
-            return ['status' => 'success', 'message' => 'User created successfully.'];
+            // Execute the query and check if the user was created
+            if ($stmt->execute()) {
+                return ['status' => 'success', 'message' => 'User created successfully.'];
+            } else {
+                return ['status' => 'error', 'message' => 'Failed to create user.'];
+            }
+        } catch (\PDOException $e) {
+            return [
+                'status' => 'error',
+                'message' => 'Database error: ' . $e->getMessage(),
+                'code' => $e->getCode()
+            ];
         }
-
-        return ['status' => 'error', 'message' => 'Failed to create user.'];
     }
 
     // user login
@@ -122,72 +130,71 @@ class User
     // sendPasswordResetEmail
     public function sendPasswordResetEmail(array $data): array
     {
-        $query = "SELECT * FROM " . $this->table_name . " WHERE email=:email";
-        $stmt = $this->conn->prepare($query);
+        // Check if the user with the given email exists
+        $userCheckQuery = "SELECT * FROM " . $this->table_name . " WHERE email=:email";
+        $userCheckStmt = $this->conn->prepare($userCheckQuery);
 
-        // Bind values
-        $stmt->bindParam(":email", $data['email']);
+        // Bind the email parameter
+        $userCheckStmt->bindParam(":email", $data['email']);
 
         // Execute the query
-        $stmt->execute();
+        if (!$userCheckStmt->execute()) {
+            return ['status' => 'error', 'message' => 'An error occurred while verifying the email.'];
+        }
 
-        // Get the row
-        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+        // Fetch the user data
+        $userRow = $userCheckStmt->fetch(\PDO::FETCH_ASSOC);
 
-        // Check if the email exists
-        if ($row) {
+        // If the user exists
+        if ($userRow) {
             // Generate a random token
             $token = bin2hex(random_bytes(50));
 
-            // Update the user's token
-            $query = "UPDATE " . $this->table_name . " SET token=:token WHERE email=:email";
-            $stmt = $this->conn->prepare($query);
+            // Prepare the token update query
+            $tokenUpdateQuery = "UPDATE " . $this->table_name . " SET token=:token WHERE email=:email";
+            $tokenUpdateStmt = $this->conn->prepare($tokenUpdateQuery);
 
-            // Bind values
-            $stmt->bindParam(":token", $token);
-            $stmt->bindParam(":email", $data['email']);
+            // Bind the parameters
+            $tokenUpdateStmt->bindParam(":token", $token);
+            $tokenUpdateStmt->bindParam(":email", $data['email']);
 
-            // Execute the query
-            if ($stmt->execute()) {
-                // Send the email
-                $mail = new PHPMailer(true);
-
-                try {
-                    //Server settings
-                    $mail->SMTPDebug = 0;                                       // Enable verbose debug output
-                    $mail->isSMTP();                                            // Set mailer to use SMTP
-                    $mail->Host = 'smtp.mailtrap.io';                     // Specify main and backup SMTP servers
-                    $mail->SMTPAuth = true;                                   // Enable SMTP authentication
-                    $mail->Username = 'e0b0c0d0e0f0g0';                        // SMTP username
-                    $mail->Password = 'e0b0c0d0e0f0g0';                        // SMTP password
-                    $mail->SMTPSecure = 'tls';                                  // Enable TLS encryption, `ssl` also accepted
-                    $mail->Port = 2525;                                   // TCP port to connect to
-
-                    //Recipients
-                    $mail->setFrom('from@example.com', 'Mailer');
-                    $mail->addAddress($data['email'], $row['first_name']);      // Add a recipient
-
-                    // Content
-                    $mail->isHTML(true);                                        // Set email format to HTML
-                    $mail->Subject = 'Password Reset';
-                    $mail->Body = 'Click <a href="http://localhost:8080/reset-password?token=' . $token . '">here</a> to reset your password.';
-                    $mail->AltBody = 'Click here to reset your password: http://localhost:8080/reset-password?token=' . $token;
-
-                    $mail->send();
-
-                    return ['status' => 'success', 'message' => 'Password reset email sent successfully.'];
-                } catch (Exception $e) {
-                    return ['status' => 'error', 'message' => 'Failed to send password reset email.'];
-                }
+            // Attempt to execute the token update query
+            if (!$tokenUpdateStmt->execute()) {
+                return ['status' => 'error', 'message' => 'An error occurred while updating the token.'];
             }
 
-            return ['status' => 'error', 'message' => 'Failed to send password reset email.'];
+            // Assuming PHPMailer is autoloaded via Composer's autoloader
+            $mail = new PHPMailer(true);
 
+            try {
+                // Server settings
+                $mail->isSMTP();
+                $mail->Host = 'sandbox.smtp.mailtrap.io';
+                $mail->SMTPAuth = true;
+                $mail->Port = 2525;
+                $mail->Username = 'e6e0df227617b8';
+                $mail->Password = 'df6d0e65768d68';
+
+                // Recipients
+                $mail->setFrom('no-reply@msc.cloud', 'Msc Programme');
+                $mail->addAddress($data['email'], $userRow['first_name']); // Add a recipient
+
+                // Content
+                $mail->isHTML(true); // Set email format to HTML
+                $mail->Subject = 'Password Reset';
+                $mail->Body = 'Click <a href="http://localhost:5173/reset-password?token=' . $token . '&email=' . $data['email'] . '">here</a> to reset your password.';
+                $mail->AltBody = 'If you’re having trouble clicking the password reset button, copy and paste the URL below into your web browser: http://localhost:8080/reset-password?token=' . $token;
+
+                $mail->send();
+                return ['status' => 'success', 'message' => 'Password reset email sent successfully.'];
+            } catch (Exception $e) {
+                return ['status' => 'error', 'message' => "Mailer Error: " . $mail->ErrorInfo];
+            }
         } else {
             return ['status' => 'error', 'message' => 'Email does not exist.'];
         }
-
     }
+
 
     // update user record
     public function update(array $data): array
@@ -231,5 +238,53 @@ class User
         }
 
         return false;
+    }
+
+    // get all users
+    public function getAll(): array
+    {
+        try {
+            // SQL query to get all users except admin
+            $query = "SELECT * FROM " . $this->table_name . " WHERE role != 'admin'";
+
+            // Prepare the query
+            $stmt = $this->conn->prepare($query);
+
+            // Execute the query
+            $stmt->execute();
+
+            // Return the result
+            return [
+                'status' => 'success',
+                'data' => $stmt->fetchAll(\PDO::FETCH_ASSOC)
+            ];
+        } catch (\PDOException $e) {
+            // Return error message and code if there is a database error
+            return [
+                'status' => 'error',
+                'message' => $e->getMessage(),
+                'code' => $e->getCode()
+            ];
+        }
+    }
+
+
+    // get user by id
+    public function getById(string $id): array
+    {
+        // SQL query to get user by id
+        $query = "SELECT * FROM " . $this->table_name . " WHERE id = ?";
+
+        // Prepare the query
+        $stmt = $this->conn->prepare($query);
+
+        // Bind the value
+        $stmt->bindParam(1, $id);
+
+        // Execute the query
+        $stmt->execute();
+
+        // Return the result
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 }

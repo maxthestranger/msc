@@ -10,22 +10,22 @@
 
 /* Styles for the scrollbar container */
 ::-webkit-scrollbar {
-    @apply w-2.5;
+    @apply w-1.5;
 }
 
 /* Styles for the draggable handle */
 ::-webkit-scrollbar-thumb {
-    @apply bg-primary rounded transition-colors;
+    @apply bg-gray rounded transition-colors;
 }
 
 /* Styles for the draggable handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-    @apply bg-primary;
+    @apply bg-gray;
 }
 
 /* Styles for the track/background */
 ::-webkit-scrollbar-track {
-    @apply bg-gray rounded;
+    @apply bg-gray-3 rounded;
 }
 
 /* For Firefox */

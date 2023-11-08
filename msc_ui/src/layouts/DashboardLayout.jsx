@@ -1,14 +1,20 @@
 import { useState } from 'react';
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import Dropdown from '../components/Dropdown';
 import Sidebar from "../components/sidebar";
 import PropTypes from "prop-types";
-import PrimaryButton from "../components/PrimaryButton.jsx";
 
 export default function Authenticated({ children }) {
-    const { currentUser } = useAuth();
+    const { currentUser, logout } = useAuth();
+    const navigate = useNavigate();
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
+
+
+    const handleLogout = async () => {
+        await logout();
+
+        navigate('/login')
+    }
 
     return (
         <div className="flex h-screen overflow-hidden">
@@ -42,7 +48,7 @@ export default function Authenticated({ children }) {
 
                         <div className="flex items-center gap-3 2xsm:gap-7 lg:ml-auto">
                             <div className="relative">
-                                <button className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-blue-600 border border-blue-600 rounded-md hover:text-primary hover:border-primary focus:outline-none">
+                                <button className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-blue-600 border border-blue-600 rounded-md hover:text-primary hover:border-primary focus:outline-none" onClick={handleLogout}>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-person-fill-dash" viewBox="0 0 16 16">
                                         <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1Zm0-7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
                                         <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z"/>

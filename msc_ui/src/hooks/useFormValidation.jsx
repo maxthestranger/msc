@@ -24,11 +24,6 @@ const useFormValidation = (initialState, validate, submitForm) => {
         });
     };
 
-    const handleBlur = () => {
-        const validationErrors = validate(values);
-        setErrors(validationErrors);
-    };
-
     const handleSubmit = (event) => {
         event.preventDefault();
         const validationErrors = validate(values);
@@ -39,7 +34,6 @@ const useFormValidation = (initialState, validate, submitForm) => {
     return {
         handleChange,
         handleSubmit,
-        handleBlur,
         values,
         errors,
         isSubmitting,

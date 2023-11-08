@@ -13,30 +13,38 @@ class UserController {
 
     // allows admin to create a new user
     public function createUser() {
-        $data = json_decode(file_get_contents("php://input"));
+        $data = json_decode(file_get_contents("php://input"), true); // Decode as array
 
         // Validate input data
-        if (!isset($data->first_name, $data->last_name, $data->email, $data->password, $data->role)) {
+        if (!isset($data['first_name'], $data['last_name'], $data['email'], $data['password'], $data['role'])) {
+            http_response_code(400); // Bad Request
             echo json_encode(['status' => 'error', 'message' => 'Invalid input. All fields are required.']);
-            http_response_code(400);  // Bad Request
             return;
         }
 
-        $result = $this->userModel->create([
-            'first_name' => $data->first_name,
-            'last_name' => $data->last_name,
-            'email' => $data->email,
-            'password' => $data->password,
-            'role' => $data->role
-        ]);
+        // Attempt to create the user
+        $result = $this->userModel->create($data);
 
-        // Send email to the user
         if ($result['status'] === 'success') {
-            $this->userModel->sendPasswordResetEmail($data->email);
+            // Attempt to send the password reset email
+            $emailResult = $this->userModel->sendPasswordResetEmail(['email' => $data['email']]);
+
+            // Check if the email was sent successfully
+            if ($emailResult['status'] === 'success') {
+                http_response_code(201); // Created
+                $result['message'] .= ' ' . $emailResult['message'];
+            } else {
+                // If the email failed to send, you may choose to still respond with 201 but indicate the failure.
+                $result['message'] .= ' ' . $emailResult['message'];
+            }
+        } else {
+            http_response_code(500); // Internal Server Error
         }
 
         echo json_encode($result);
     }
+
+
 
     // user login
     public function login() {
@@ -110,6 +118,44 @@ class UserController {
         }
 
         $result = $this->userModel->delete($data->id);
+
+        echo json_encode($result);
+    }
+
+    // get all users
+    public function getUsers() {
+        $result = $this->userModel->getAll();
+
+        if ($result['status'] === 'error') {
+            // Set HTTP response status code to 500 or another appropriate code
+            http_response_code(500);
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'An error occurred while fetching users.'
+            ]);
+            return;
+        }
+
+        // If everything is okay, set HTTP response status code to 200
+        http_response_code(200);
+        echo json_encode([
+            'status' => 'success',
+            'data' => $result['data']
+        ]);
+    }
+
+    // get user by id
+    public function getUser() {
+        $data = json_decode(file_get_contents("php://input"));
+
+        // Validate input data
+        if (!isset($data->id)) {
+            echo json_encode(['status' => 'error', 'message' => 'Invalid input. User ID is required.']);
+            http_response_code(400);  // Bad Request
+            return;
+        }
+
+        $result = $this->userModel->getById($data->id);
 
         echo json_encode($result);
     }

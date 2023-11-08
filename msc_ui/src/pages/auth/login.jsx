@@ -13,7 +13,6 @@ import validateLogin from '../../utils/validateLogin';
 const INITIAL_STATE = {
     email: '',
     password: '',
-    remember: false,
 };
 
 export default function Login() {
@@ -103,24 +102,6 @@ export default function Login() {
                                 onBlur={handleBlur}
                             />
                             {errors.password && <InputError message={errors.password} className="mt-2" />}
-                        </div>
-
-                        <div className="flex items-center justify-between mb-4.5">
-                            <label className="flex items-center">
-                                <Checkbox
-                                    name="remember"
-                                    checked={values.remember}
-                                    onChange={handleChange}
-                                />
-                                <span className="ml-2 text-sm text-gray-600">Remember me</span>
-                            </label>
-
-                            <Link
-                                to="/login"
-                                className="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                            >
-                                Forgot your password?
-                            </Link>
                         </div>
 
                         <div className="mb-4.5">
