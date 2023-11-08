@@ -15,20 +15,35 @@ import AdminDashboard from "./pages/dashboards/admin";
 import Courses from "./pages/courses/index";
 import CreateCourse from "./pages/courses/create";
 import CreateUser from "./pages/users/create";
-
-// css
-import './assets/css/app.css'
 import Users from "./pages/users/index.jsx";
 import ResetPassword from "./pages/auth/resetPassword.jsx";
 import InstructorDashboard from "./pages/dashboards/instructor.jsx";
 import CoordinatorDashboard from "./pages/dashboards/coordinator.jsx";
 import StudentDashboard from "./pages/dashboards/student.jsx";
 import QaDashboard from "./pages/dashboards/qa.jsx";
+import About from "./pages/about.jsx";
+import Services from "./pages/services.jsx";
+import Contact from "./pages/contact.jsx";
+
+// css
+import './assets/css/app.css'
 
 const router = createBrowserRouter([
     {
         path: "/",
         element: <Index />,
+    },
+    {
+        path: "/about",
+        element: <About />,
+    },
+    {
+        path: "/services",
+        element: <Services />,
+    },
+    {
+        path: "/contact",
+        element: <Contact />,
     },
     {
         path: "/login",

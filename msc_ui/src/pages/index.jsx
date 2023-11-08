@@ -23,8 +23,8 @@ export default function Index({ auth }) {
                                 <button className="px-6 py-4 bg-blue-700 text-white font-semibold text-lg rounded-xl hover:bg-blue-900 transition ease-in-out duration-500">Start Your Journey</button>
                             </div>
 
-                            <div className="hidden xl:block xl:absolute z-0 top-30 right-20 max-w-150">
-                                <img src="/images/qw.png" alt="Home img" />
+                            <div className="hidden xl:block xl:absolute z-0 top-30 right-20 max-w-150 rounded-2xl">
+                                <img src="/images/qw.png" alt="Home img" className="rounded-2xl" />
                             </div>
 
                         </div>

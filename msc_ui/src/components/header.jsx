@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import {Link, NavLink, useNavigate} from "react-router-dom";
 import PropTypes from "prop-types";
 import { useAuth } from "../contexts/AuthContext";
 
@@ -16,7 +16,7 @@ export default function Header() {
     }
 
     return (
-        <header className="bg-transparent text-black sticky top-0 z-50 w-full">
+        <header className="bg-white text-black sticky top-0 z-50 w-full">
             <div className="container mx-auto flex flex-wrap justify-between items-center px-4 py-4 sm:px-6 lg:px-8">
                 <div className="flex items-center">
                     <Link to="/" className="text-xl flex justify-between items-center gap-2 font-bold px-3 py-2 text-white border-4 border-primary capitalize sm:text-2xl">
@@ -28,11 +28,27 @@ export default function Header() {
                 </div>
 
                 <nav className="hidden sm:flex items-center">
-                    <a href="/" className="block p-4 text-blue-600 font-bold hover:text-primary">Home</a>
-                    <a href="/about" className="block p-4 text-blue-600 font-bold hover:text-primary">About</a>
-                    <a href="/services" className="block p-4 text-blue-600 font-bold hover:text-primary">Services</a>
+                    <NavLink to="/" className={({ isActive }) =>
+                        `block p-4 text-blue-600 font-bold hover:text-primary ${
+                            isActive ? 'text-primary bg-gray' : ''
+                        }`
+                    }>Home</NavLink>
+                    <NavLink to="/about" className={({ isActive }) =>
+                        `block p-4 text-blue-600 font-bold hover:text-primary ${
+                            isActive ? 'text-primary bg-gray' : ''
+                        }`
+                    }>About</NavLink>
+                    <NavLink to="/services" className={({ isActive }) =>
+                        `block p-4 text-blue-600 font-bold hover:text-primary ${
+                            isActive ? 'text-primary bg-gray' : ''
+                        }`
+                    }>Services</NavLink>
                     <a href="https://blog.navjotsingh.uta.cloud/" className="block p-4 text-blue-600 font-bold hover:text-primary" target="_blank" rel="noreferrer">Blog</a>
-                    <a href="/contact" className="block p-4 text-blue-600 font-bold hover:text-primary">Contact</a>
+                    <NavLink to="/contact" className={({ isActive }) =>
+                        `block p-4 text-blue-600 font-bold hover:text-primary ${
+                            isActive ? 'text-primary bg-gray' : ''
+                        }`
+                    }>Contact</NavLink>
                 </nav>
 
                 <div className="flex items-center sm:hidden">
@@ -64,11 +80,27 @@ export default function Header() {
                 {/* Mobile Dropdown */}
                 <div className={`${showingNavigationDropdown ? 'block' : 'hidden'} sm:hidden`}>
                     <nav>
-                        <a href="/" className="block p-4 text-blue-600 font-bold hover:text-primary">Home</a>
-                        <a href="/about" className="block p-4 text-blue-600 font-bold hover:text-primary">About</a>
-                        <a href="/services" className="block p-4 text-blue-600 font-bold hover:text-primary">Services</a>
+                        <NavLink to="/" className={({ isActive }) =>
+                            `block p-4 text-blue-600 font-bold hover:text-primary ${
+                                isActive ? 'text-primary bg-gray' : ''
+                            }`
+                        }>Home</NavLink>
+                        <NavLink to="/about" className={({ isActive }) =>
+                            `block p-4 text-blue-600 font-bold hover:text-primary ${
+                                isActive ? 'text-primary bg-gray' : ''
+                            }`
+                        }>About</NavLink>
+                        <NavLink to="/services" className={({ isActive }) =>
+                            `block p-4 text-blue-600 font-bold hover:text-primary ${
+                                isActive ? 'text-primary bg-gray' : ''
+                            }`
+                        }>Services</NavLink>
                         <a href="https://blog.navjotsingh.uta.cloud/" className="block p-4 text-blue-600 font-bold hover:text-primary" target="_blank" rel="noreferrer">Blog</a>
-                        <a href="/contact" className="block p-4 text-blue-600 font-bold hover:text-primary">Contact</a>
+                        <NavLink to="/contact" className={({ isActive }) =>
+                            `block p-4 text-blue-600 font-bold hover:text-primary ${
+                                isActive ? 'text-primary bg-gray' : ''
+                            }`
+                        }>Contact</NavLink>
                     </nav>
                 </div>
 
