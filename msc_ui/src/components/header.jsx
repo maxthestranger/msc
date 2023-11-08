@@ -16,7 +16,7 @@ export default function Header() {
     }
 
     return (
-        <header className="bg-white text-black sticky top-0 z-50 w-full">
+        <header className="bg-transparent text-black sticky top-0 z-50 w-full">
             <div className="container mx-auto flex flex-wrap justify-between items-center px-4 py-4 sm:px-6 lg:px-8">
                 <div className="flex items-center">
                     <Link to="/" className="text-xl flex justify-between items-center gap-2 font-bold px-3 py-2 text-white border-4 border-primary capitalize sm:text-2xl">
