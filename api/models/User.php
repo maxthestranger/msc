@@ -169,11 +169,11 @@ class User
             try {
                 // Server settings
                 $mail->isSMTP();
-                $mail->Host = 'sandbox.smtp.mailtrap.io';
+                $mail->Host = 'admin_canva@sxs4923.uta.cloud';
                 $mail->SMTPAuth = true;
-                $mail->Port = 2525;
-                $mail->Username = 'e6e0df227617b8';
-                $mail->Password = 'df6d0e65768d68';
+                $mail->Port = 465;
+                $mail->Username = 'admin_canva@sxs4923.uta.cloud';
+                $mail->Password = 'uioV.FPm#3*t';
 
                 // Recipients
                 $mail->setFrom('no-reply@msc.cloud', 'Msc Programme');

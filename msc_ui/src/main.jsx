@@ -24,6 +24,8 @@ import QaDashboard from "./pages/dashboards/qa.jsx";
 import About from "./pages/about.jsx";
 import Services from "./pages/services.jsx";
 import Contact from "./pages/contact.jsx";
+import Error from "./pages/error.jsx";
+import EditUser from "./pages/users/edit.jsx";
 
 // css
 import './assets/css/app.css'
@@ -103,11 +105,11 @@ const router = createBrowserRouter([
     },
     {
         path: "/users/:id/edit",
-        element: <Users />
+        element: <EditUser />
     },
     {
         path: "*",
-        element: <h1>404</h1>
+        element: <Error />
     }
 ]);
 

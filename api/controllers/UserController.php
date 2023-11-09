@@ -85,26 +85,35 @@ class UserController {
     }
 
     // update user
-    public function updateUser() {
+    public function updateUser($id) {
         $data = json_decode(file_get_contents("php://input"));
 
         // Validate input data
-        if (!isset($data->id, $data->first_name, $data->last_name, $data->email, $data->role)) {
+        if (!isset($data->first_name, $data->last_name, $data->email, $data->role)) {
             echo json_encode(['status' => 'error', 'message' => 'Invalid input. All fields are required.']);
-            http_response_code(400);  // Bad Request
+            http_response_code(400); // Bad Request
             return;
         }
 
+        // Additional validation can be performed here (e.g., email format, role validation, etc.)
+
         $result = $this->userModel->update([
-            'id' => $data->id,
+            'id' => $id,
             'first_name' => $data->first_name,
             'last_name' => $data->last_name,
             'email' => $data->email,
             'role' => $data->role
         ]);
 
-        echo json_encode($result);
+        if ($result) {
+            echo json_encode(['status' => 'success', 'message' => 'User updated successfully.']);
+            http_response_code(200); // OK
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Failed to update user.']);
+            http_response_code(500); // Internal Server Error
+        }
     }
+
 
     // delete user
     public function deleteUser() {
