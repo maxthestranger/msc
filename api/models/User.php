@@ -171,7 +171,7 @@ class User
                 $mail->isSMTP();
                 $mail->Host = 'admin_canva@sxs4923.uta.cloud';
                 $mail->SMTPAuth = true;
-                $mail->Port = 465;
+                $mail->Port = 993;
                 $mail->Username = 'admin_canva@sxs4923.uta.cloud';
                 $mail->Password = 'uioV.FPm#3*t';
 
