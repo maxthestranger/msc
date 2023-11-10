@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 // Create a context
 const AuthContext = createContext();
 
-const BASE_URL = "http://localhost:8000/api";
+const BASE_URL = "https://api.uta.cloud/api";
 
 export const useAuth = () => {
   return useContext(AuthContext);

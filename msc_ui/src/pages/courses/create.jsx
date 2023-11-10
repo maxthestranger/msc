@@ -92,7 +92,7 @@ export default function Create() {
                                 <div className="p-6.5">
                                     <div className="mb-4.5">
                                         <InputLabel htmlFor="course_code" value="Course Code" />
-                                        <TextInput id="course_code" placeholder="Enter course code" type="url" name="course_code" value={data.course_code} onChange={(e) => handleChange(e)} />
+                                        <TextInput id="course_code" placeholder="Enter course code" type="text" name="course_code" value={data.course_code} onChange={(e) => handleChange(e)} />
 
                                         <InputError message={errors.course_code} className="mt-2" />
                                     </div>

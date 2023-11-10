@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import useApiRequest from "./useApiRequest";
 
-const BASE_URL = "http://localhost:8000/api/courses";
+const BASE_URL = "https://api.uta.cloud/api/courses";
 const useCourses = () => {
   const [courses, setCourses] = useState([]);
   const { execute } = useApiRequest();

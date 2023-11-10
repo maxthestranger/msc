@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import useApiRequest from "./useApiRequest";
 
-const BASE_URL = "http://localhost:8000/api/users";
+const BASE_URL = "https://api.uta.cloud/api/users";
 
 const useUsers = () => {
   const [users, setUsers] = useState([]);
