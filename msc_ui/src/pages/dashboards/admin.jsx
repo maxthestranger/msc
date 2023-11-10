@@ -1,5 +1,7 @@
 import DashboardLayout from '../../layouts/DashboardLayout';
 import RoleGraph from "../../components/roleGraph";
+import CourseChart from "../../components/courseChart.jsx";
+import ProgramChart from "../../components/programChart.jsx";
 
 export default function AdminDashboard() {
     return (
@@ -16,7 +18,7 @@ export default function AdminDashboard() {
                             <h4
                                 className="mb-0.5 text-xl font-semibold text-black md:text-title-lg">
                                 {
-                                    300
+                                    10
                                 }
                             </h4>
                             <p className="text-base font-medium">Available Courses</p>
@@ -31,7 +33,7 @@ export default function AdminDashboard() {
                             <h4
                                 className="mb-0.5 text-xl font-semibold text-black md:text-title-lg">
                                 {
-                                    300
+                                    15
                                 }
                             </h4>
                             <p className="text-base font-medium">Assessments</p>
@@ -46,7 +48,7 @@ export default function AdminDashboard() {
                             <h4
                                 className="mb-0.5 text-xl font-semibold text-black md:text-title-lg">
                                 {
-                                    300
+                                    10
                                 }
                             </h4>
                             <p className="text-base font-medium">Users</p>
@@ -61,7 +63,7 @@ export default function AdminDashboard() {
                             <h4
                                 className="mb-0.5 text-xl font-semibold text-black md:text-title-lg">
                                 {
-                                    300
+                                    30
                                 }
                             </h4>
                             <p className="text-base font-medium">Enrollments</p>
@@ -83,7 +85,7 @@ export default function AdminDashboard() {
 
 
                     <div className="p-4 md:p-6 xl:p-7.5">
-                        <div className="flex flex-col gap-7">
+                        <div className="flex items-center justify-center">
                             <RoleGraph />
                         </div>
                     </div>
@@ -99,10 +101,9 @@ export default function AdminDashboard() {
                         </div>
                     </div>
 
-
                     <div className="p-4 md:p-6 xl:p-7.5">
-                        <div className="flex flex-col gap-7">
-
+                        <div className="flex items-center justify-center">
+                            <CourseChart />
                         </div>
                     </div>
                 </div>
@@ -120,8 +121,8 @@ export default function AdminDashboard() {
 
 
                 <div className="p-4 md:p-6 xl:p-7.5">
-                    <div className="flex flex-col gap-7">
-
+                    <div className="flex items-center justify-center">
+                        <ProgramChart />
                     </div>
                 </div>
             </div>

@@ -7,7 +7,7 @@ export default function MdEditor({value, onChange}) {
             <MDEditor
                 value={value}
                 onChange={onChange}
-                name="description"
+                name="course_description"
             />
         </div>
     );

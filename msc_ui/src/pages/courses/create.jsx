@@ -26,7 +26,7 @@ export default function Create() {
 
     const [errors, setErrors] = useState({
         course_name: '',
-        description: '',
+        course_description: '',
         course_code: '',
     });
 
@@ -39,7 +39,7 @@ export default function Create() {
             errors['course_name'] = 'Course name is required';
         }
 
-        if (!data.description) {
+        if (!data.course_description) {
             formIsValid = false;
             errors['description'] = 'Description is required';
         }
@@ -65,7 +65,7 @@ export default function Create() {
         e.preventDefault();
 
         if (handleValidation()) {
-            await createCourse({...data, created_by: currentUser.id}).then(() => {
+            await createCourse({...data, created_by_admin: currentUser.id}).then(() => {
                 navigate('/courses');
             });
         }
@@ -103,10 +103,10 @@ export default function Create() {
                                         <InputError message={errors.course_name} className="mt-2" />
                                     </div>
                                     <div className="mb-4.5">
-                                        <InputLabel htmlFor="description" value="Description" />
-                                        <MdEditor value={data.description} onChange={(e) => setData({...data, description: e})} />
+                                        <InputLabel htmlFor="course_description" value="Description" />
+                                        <MdEditor value={data.course_description} onChange={(e) => setData({...data, course_description: e})} />
 
-                                        <InputError message={errors.description} className="mt-2" />
+                                        <InputError message={errors.course_description} className="mt-2" />
                                     </div>
                                     <button className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none" type="submit">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-terminal-plus" viewBox="0 0 16 16">

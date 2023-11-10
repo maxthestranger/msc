@@ -29,6 +29,8 @@ import EditUser from "./pages/users/edit.jsx";
 
 // css
 import './assets/css/app.css'
+import Settings from "./pages/extras/settings.jsx";
+import Reports from "./pages/extras/reports.jsx";
 
 const router = createBrowserRouter([
     {
@@ -58,6 +60,14 @@ const router = createBrowserRouter([
     {
         path: "/admin/dashboard",
         element: <AdminDashboard />
+    },
+    {
+        path: "/admin/settings",
+        element: <Settings />
+    },
+    {
+        path: "/admin/reports",
+        element: <Reports />
     },
     {
         path: "/instructor/dashboard",

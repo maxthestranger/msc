@@ -18,8 +18,20 @@ const useCourses = () => {
 
   // Create a new course using REST API
   const createCourse = async (courseData) => {
-    await execute(BASE_URL, "POST", courseData);
-    await fetchCourses(); // Refresh the list of courses after creation
+    const response = await fetch(BASE_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(courseData),
+    });
+
+    if (response.ok) {
+      await fetchCourses();
+    } else {
+      const errorData = await response.json();
+      throw new Error(errorData.message);
+    }
   };
 
   // Update a course using REST API
@@ -41,13 +53,19 @@ const useCourses = () => {
   useEffect(() => {
     // Initialize courses state
     const initFetch = async () => {
-      const response = await execute(
-        BASE_URL,
-        "GET"
-      );
-      if (response) {
-        setCourses(response); // Set courses with fetched data
-      }
+      const response = await fetch(BASE_URL, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+          .then((res) => res.json())
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+
+        setCourses(response);
+
     };
     initFetch();
   }, [execute]);
