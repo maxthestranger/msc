@@ -15,10 +15,11 @@ class Course {
         try {
             $this->validateCourseData($data);
 
-            $query = "INSERT INTO " . $this->table_name . " SET course_name=:course_name, course_description=:course_description, created_by_admin=:created_by_admin";
+            $query = "INSERT INTO " . $this->table_name . " SET course_name=:course_name, course_code=:course_code, course_description=:course_description, created_by_admin=:created_by_admin";
             $stmt = $this->conn->prepare($query);
 
             $stmt->bindParam(":course_name", $data['course_name']);
+            $stmt->bindParam(":course_code", $data['course_code']);
             $stmt->bindParam(":course_description", $data['course_description']);
             $stmt->bindParam(":created_by_admin", $data['created_by_admin']);
 
@@ -86,16 +87,16 @@ class Course {
             throw new \InvalidArgumentException("Course name cannot be longer than 255 characters.");
         }
 
+        if (strlen($data['course_code']) > 255) {
+            throw new \InvalidArgumentException("Course code cannot be longer than 255 characters.");
+        }
+
         if (strlen($data['course_description']) > 1000) {
             throw new \InvalidArgumentException("Course description cannot be longer than 1000 characters.");
         }
 
         if (!ctype_digit($data['created_by_admin']) || $data['created_by_admin'] <= 0) {
             throw new \InvalidArgumentException("Invalid admin ID.");
-        }
-
-        if (!ctype_digit($data['id']) || $data['id'] <= 0) {
-            throw new \InvalidArgumentException("Invalid course ID.");
         }
     }
 

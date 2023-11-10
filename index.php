@@ -45,6 +45,7 @@ $router->route('api/users/:id', 'PUT', function($id) use ($userModel) {
 $router->route('api/users/delete', 'DELETE', [new UserController($userModel), 'deleteUser']);
 
 // Courses
+$router->route('api/courses', 'GET', [new CourseController($courseModel), 'getCourses']);
 $router->route('api/course/create', 'POST', [new CourseController($courseModel), 'createCourse']);
 $router->route('api/course/update', 'PUT', [new CourseController($courseModel), 'updateCourse']);
 $router->route('api/course/delete', 'DELETE', [new CourseController($courseModel), 'deleteCourse']);

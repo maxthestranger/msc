@@ -16,7 +16,7 @@ class CourseController {
         $data = json_decode(file_get_contents("php://input"));
 
         // Validate input data
-        if (!isset($data->course_name, $data->course_description, $data->created_by_admin)) {
+        if (!isset($data->course_name, $data->course_code, $data->course_description, $data->created_by_admin)) {
             echo json_encode(['status' => 'error', 'message' => 'Invalid input. All fields are required.']);
             http_response_code(400);  // Bad Request
             return;
@@ -24,6 +24,7 @@ class CourseController {
 
         $result = $this->courseModel->create([
             'course_name' => $data->course_name,
+            'course_code' => $data->course_code,
             'course_description' => $data->course_description,
             'created_by_admin' => $data->created_by_admin
         ]);
@@ -79,6 +80,13 @@ class CourseController {
         }
 
         $result = $this->courseModel->getCourse($data->id);
+
+        echo json_encode($result);
+    }
+
+    // Get all courses
+    public function getCourses() {
+        $result = $this->courseModel->getAll();
 
         echo json_encode($result);
     }
